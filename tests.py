@@ -1,4 +1,3 @@
-import os
 from unittest.mock import Mock, patch
 
 import pytest
@@ -13,10 +12,7 @@ from app import (
     generate,
     generate_error,
     ping,
-    restart,
     setdir,
-    uptime,
-    viewlast,
 )
 
 
@@ -92,4 +88,3 @@ def test_generate_error_command_general_error(mock_ctx):
     bot.loop.run_until_complete(generate_error(mock_ctx, error))
     mock_ctx.send.assert_called_once_with(f"An error occurred: {error}")
 
-# ------- Further Tests --------

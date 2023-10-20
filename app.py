@@ -10,9 +10,14 @@ from discord.ext import commands
 TOKEN = "MTE2NTA1NDQyOTQzMTYwMzMwMg.GaN_Qi.iI6bMov43v8YGiVDaR33A5Jm4pjL4p4fIIFqk4"
 SAVE_DIRECTORY = "images/"
 
-bot = commands.Bot(command_prefix="!")
+intents = discord.Intents.default()
+# ... set other intents as needed
+bot = commands.Bot(command_prefix="!", intents=intents)
+
 bot.launch_time = time.time()
 dalle_instance = Dalle("YOUR_COOKIE_VALUE")
+
+
 
 
 @bot.event
