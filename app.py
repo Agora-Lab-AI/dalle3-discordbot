@@ -117,4 +117,4 @@ async def generate_error(ctx, error):
         await ctx.send(f"An error occurred: {error}")
 
 
-bot.run(TOKEN)
+bot.run(DISCORD_TOKEN)
