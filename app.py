@@ -7,7 +7,12 @@ import discord
 from dalle3 import Dalle
 from discord.ext import commands
 
-TOKEN = "YOUR_DISCORD_BOT_TOKEN"
+
+# keys
+DISCORD_TOKEN = os.getenv("DISCORD_API_KEY") or "YOUR_DISCORD_BOT_TOKEN"
+DALLE_TOKEN = os.getenv("BING_COOKIE")
+
+
 SAVE_DIRECTORY = "images/"
 
 intents = discord.Intents.default()
@@ -15,9 +20,7 @@ intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 bot.launch_time = time.time()
-dalle_instance = Dalle("YOUR_COOKIE_VALUE")
-
-
+dalle_instance = Dalle(DALLE_TOKEN)
 
 
 @bot.event
