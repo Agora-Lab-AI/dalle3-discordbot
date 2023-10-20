@@ -23,8 +23,8 @@ A discord bot for the dalle3 api
 1. **Clone the Repository**:
 
    ```bash
-   git clone https://github.com/YOUR_REPOSITORY_URL.git
-   cd YOUR_REPOSITORY_NAME
+   git clonehttps://github.com/Agora-X/dalle3-discordbot.git
+   cd dalle3-discordbot
    ```
 
    Replace `YOUR_REPOSITORY_URL` with the URL of your repository and `YOUR_REPOSITORY_NAME` with the name of your repository.
@@ -45,10 +45,8 @@ A discord bot for the dalle3 api
    Make sure you have a `requirements.txt` file in the root of your repository with the following content:
 
    ```
-   discord.py
-   requests
-   undetected-chromedriver
-   selenium
+   dalle3
+   discord
    ```
 
 ## Configuration
@@ -71,10 +69,10 @@ A discord bot for the dalle3 api
 With everything set up, you can now run the bot:
 
 ```bash
-python bot_script_name.py
+python app.py
 ```
 
-Replace `bot_script_name.py` with the actual name of your bot script.
+Replace `app.py` with the actual name of your bot script.
 
 Once running, you should see a message in the console indicating that the bot has logged in.
 
