@@ -7,8 +7,8 @@ import discord
 from dalle3 import Dalle
 from discord.ext import commands
 
-TOKEN = 'YOUR_DISCORD_BOT_TOKEN'
-SAVE_DIRECTORY = 'images/'
+TOKEN = "YOUR_DISCORD_BOT_TOKEN"
+SAVE_DIRECTORY = "images/"
 
 bot = commands.Bot(command_prefix="!")
 bot.launch_time = time.time()
@@ -17,7 +17,7 @@ dalle_instance = Dalle("YOUR_COOKIE_VALUE")
 
 @bot.event
 async def on_ready():
-    print(f'Logged in as {bot.user.name}')
+    print(f"Logged in as {bot.user.name}")
 
 
 @bot.command()
@@ -50,7 +50,7 @@ async def helpme(ctx):
 @bot.command()
 async def ping(ctx):
     """Pings the bot"""
-    await ctx.send('Pong!')
+    await ctx.send("Pong!")
 
 
 @bot.command()
@@ -64,7 +64,14 @@ async def setdir(ctx, directory: str):
 @bot.command()
 async def viewlast(ctx):
     """View last generated image"""
-    images = sorted([os.path.join(SAVE_DIRECTORY, f) for f in os.listdir(SAVE_DIRECTORY) if os.path.isfile(os.path.join(SAVE_DIRECTORY, f))], key=os.path.getctime)
+    images = sorted(
+        [
+            os.path.join(SAVE_DIRECTORY, f)
+            for f in os.listdir(SAVE_DIRECTORY)
+            if os.path.isfile(os.path.join(SAVE_DIRECTORY, f))
+        ],
+        key=os.path.getctime,
+    )
     if images:
         await ctx.send(file=discord.File(images[-1]))
     else:
@@ -91,7 +98,7 @@ async def uptime(ctx):
 async def restart(ctx):
     """Restarts the bot (only accessible by the bot owner)"""
     await ctx.send("Restarting...")
-    os.execv(sys.executable, ['python'] + sys.argv)
+    os.execv(sys.executable, ["python"] + sys.argv)
 
 
 @generate.error
