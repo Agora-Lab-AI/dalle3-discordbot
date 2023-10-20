@@ -1,9 +1,11 @@
 import datetime
-import discord
-from discord.ext import commands
 import os
+import sys
 import time
-from dalle3 import Dalle  # Assuming the provided Dalle3 class is named 'dalle3.py'
+
+import discord
+from dalle3 import Dalle
+from discord.ext import commands
 
 TOKEN = 'YOUR_DISCORD_BOT_TOKEN'
 SAVE_DIRECTORY = 'images/'
