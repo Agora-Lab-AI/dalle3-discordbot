@@ -7,7 +7,7 @@ import discord
 from dalle3 import Dalle
 from discord.ext import commands
 
-TOKEN = "YOUR_DISCORD_BOT_TOKEN"
+TOKEN = "MTE2NTA1NDQyOTQzMTYwMzMwMg.GaN_Qi.iI6bMov43v8YGiVDaR33A5Jm4pjL4p4fIIFqk4"
 SAVE_DIRECTORY = "images/"
 
 bot = commands.Bot(command_prefix="!")
