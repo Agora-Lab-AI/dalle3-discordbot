@@ -16,8 +16,10 @@ DALLE_TOKEN = os.getenv("BING_COOKIE")
 SAVE_DIRECTORY = "images/"
 
 intents = discord.Intents.default()
-# ... set other intents as needed
+intents.messages = True
+intents.guilds = True
 bot = commands.Bot(command_prefix="!", intents=intents)
+
 
 bot.launch_time = time.time()
 dalle_instance = Dalle(DALLE_TOKEN)
