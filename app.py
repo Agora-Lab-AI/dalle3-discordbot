@@ -2,6 +2,7 @@ import datetime
 import os
 import sys
 import time
+import concurrent.futures
 
 import discord
 from dalle3 import Dalle
@@ -13,66 +14,67 @@ import boto3
 
 load_dotenv()
 
+# AWS S3 Configuration (commented out in your original code)
+# ... (keep this part unchanged if you decide to use it)
 
-#AWS
-# AWS S3 Configuration
-# AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-# AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-# S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
-# s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+# Fetch keys from environment variables
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+DALLE_TOKEN = os.getenv("DALLE_TOKEN")
 
-
-# keys
-DISCORD_TOKEN = "" 
-DALLE_TOKEN = ""
-
-
-
-
-TOKEN = "MTE2NTA1NDQyOTQzMTYwMzMwMg.GaN_Qi.iI6bMov43v8YGiVDaR33A5Jm4pjL4p4fIIFqk4"
 SAVE_DIRECTORY = "images/"
 
 intents = discord.Intents.default()
 intents.messages = True
 intents.guilds = True
-intents.message_content = True  # Ensure this intent is enabled
+intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
-
 
 bot.launch_time = time.time()
 dalle_instance = Dalle(DALLE_TOKEN)
 
+# Initialize the ThreadPoolExecutor
+executor = concurrent.futures.ThreadPoolExecutor()
 
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user.name}")
 
-
-executor = None
-
 @bot.command()
 async def generate(ctx, *, prompt: str):
     """Generates images based on the provided prompt"""
     await ctx.send(f"Generating images for prompt: `{prompt}`...")
-
     loop = asyncio.get_event_loop()
 
-    # Offload the image generation to another thread
-    await loop.run_in_executor(executor, dalle_instance.run, prompt)
-    print("Done generating images!")
+    # Initialize a Future object for the DALLE instance
+    future = loop.run_in_executor(executor, dalle_instance.run, prompt)
 
-    # List all files in the SAVE_DIRECTORY
-    all_files = [os.path.join(root, file) for root, _, files in os.walk(SAVE_DIRECTORY) for file in files]
-    
-    # Sort files by their creation time (latest first)
-    sorted_files = sorted(all_files, key=os.path.getctime, reverse=True)
+    try:
+        # Wait for the DALLE request to complete, with a timeout of 60 seconds
+        await asyncio.wait_for(future, timeout=90)
+        print("Done generating images!")
 
-    # Get the 4 most recent files
-    latest_files = sorted_files[:4]
-    print(f"Sending {len(latest_files)} images to Discord...")
+        # List all files in the SAVE_DIRECTORY
+        all_files = [os.path.join(root, file) for root, _, files in os.walk(SAVE_DIRECTORY) for file in files]
 
-    for filepath in latest_files:
-        await ctx.send(file=discord.File(filepath))
+        # Sort files by their creation time (latest first)
+        sorted_files = sorted(all_files, key=os.path.getctime, reverse=True)
+
+        # Get the 4 most recent files
+        latest_files = sorted_files[:4]
+        print(f"Sending {len(latest_files)} images to Discord...")
+
+        # Send all the latest images in a single message
+        await ctx.send(files=[discord.File(filepath) for filepath in latest_files])
+
+    except asyncio.TimeoutError:
+        await ctx.send("The request took too long! It might have been censored. Please try entering the prompt again.")
+    except Exception as e:
+        await ctx.send(f"An error occurred: {e}")
+
+    except asyncio.TimeoutError:
+        await ctx.send("The request took too long! It might have been censored. Please try entering the prompt again.")
+    except Exception as e:
+        await ctx.send(f"An error occurred: {e}")
 
 
 # @bot.command()
