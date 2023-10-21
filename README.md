@@ -87,6 +87,34 @@ Once running, you should see a message in the console indicating that the bot ha
 - `!uptime`: Get bot's uptime.
 - `!restart`: Restart the bot (owner only).
 
-## Conclusion
 
-You now have a Discord bot capable of generating images using DALL-E. Enjoy and be creative with your prompts!
+# Note
+- 1 only generation at a time
+- cookie expires
+- will output the most 4 recent images in time
+
+
+# Todo
+- make a playwright verison
+- Make censorship detection if it waits, Should code some censorship detection to send a message that it couldn’t generated
+- Also suggested trying playwright with a manual login instead of this cookie thing if OpenAI somehow patched it
+- but yeah. there's no error. it's a bug with get_urls() where it freezes on that function 
+d
+- No error, just when I do .run() I get this "INFO:root:[20/10/2023 21:26:56] Bing Image Creator (Dalle-3) Opened
+INFO:root:[20/10/2023 21:26:58] Cookie values added " and then nothing else 
+- where is the log saved?
+- Idk wym by paste error log cause there’s no error it just gets stuck on get_urls()
+- feedback, censorship detection, 
+oh it suddenly started working for me
+maybe it's because I didn't have undetected_chromedriver installed
+but I installed it to try the other github?
+- parse token usage and print and notify user if there are none left
+- and if it's censored does it at least throw an error wait error around 10 seconds, it would be, perhaps we could do time timeout where it just stops everything, I think better would be to also have a loop that checks for the words "unsafe content detected" or whatever the message is
+- @Kye does it tell you when the cookie expires?
+- Can't we add something like before generation add you own link or something to generate?
+- Make the retreival better, parse only the 4 images for the request
+- parse when cookie expires somehow, set a day maybe
+- that makes the need for it to say censored instead of getting stuck in a loop more prevalent
+so you can properly schedule it
+otherwise if it gets stuck in a loop there's no way to tell the difference programmatically if another request is still generating or it got censored
+!generate photorealistic 3D render of batman made out of legos
