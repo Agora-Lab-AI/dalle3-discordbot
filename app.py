@@ -16,15 +16,16 @@ load_dotenv()
 
 #AWS
 # AWS S3 Configuration
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
-s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+# AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+# AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+# S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
+# s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
 
 
 # keys
-DISCORD_TOKEN = os.getenv("DISCORD_API_KEY") 
-DALLE_TOKEN = os.getenv("BING_COOKIE") 
+DISCORD_TOKEN = "" 
+DALLE_TOKEN = ""
+
 
 
 
@@ -58,13 +59,50 @@ async def generate(ctx, *, prompt: str):
 
     # Offload the image generation to another thread
     await loop.run_in_executor(executor, dalle_instance.run, prompt)
+    print("Done generating images!")
 
-    for root, dirs, files in os.walk(SAVE_DIRECTORY):
-        for filename in files:
-            filepath = os.path.join(root, filename)
-            await ctx.send(file=discord.File(filepath))
+    # List all files in the SAVE_DIRECTORY
+    all_files = [os.path.join(root, file) for root, _, files in os.walk(SAVE_DIRECTORY) for file in files]
+    
+    # Sort files by their creation time (latest first)
+    sorted_files = sorted(all_files, key=os.path.getctime, reverse=True)
+
+    # Get the 4 most recent files
+    latest_files = sorted_files[:4]
+    print(f"Sending {len(latest_files)} images to Discord...")
+
+    for filepath in latest_files:
+        await ctx.send(file=discord.File(filepath))
 
 
+# @bot.command()
+# async def generate(ctx, *, prompt: str):
+#     """Generates images based on the provided prompt"""
+#     await ctx.send(f"Generating images for prompt: `{prompt}`...")
+
+#     # Make a unique directory for this generation session using the message ID
+#     session_save_directory = os.path.join(SAVE_DIRECTORY, str(ctx.message.id))
+#     os.makedirs(session_save_directory, exist_ok=True)
+
+#     # Offload the image generation to another thread.
+#     loop = asyncio.get_event_loop()
+#     await loop.run_in_executor(executor, dalle_instance.run, prompt, session_save_directory)
+
+#     # Get all the images saved in the session's directory.
+#     generated_images = sorted(glob.glob(os.path.join(session_save_directory, '*')), key=os.path.getctime)
+
+#     # Upload to S3 and send the URL to the user:
+#     for image_path in generated_images:
+#         file_name = os.path.basename(image_path)
+#         s3.upload_file(image_path, S3_BUCKET_NAME, file_name, ExtraArgs={'ACL': 'public-read'})
+        
+#         image_url = f"https://{S3_BUCKET_NAME}.s3.amazonaws.com/{file_name}"
+#         await ctx.send(image_url)
+
+#     # Cleanup: Optionally, delete the session's directory after sending the images.
+#     for image_path in generated_images:
+#         os.remove(image_path)
+#     os.rmdir(session_save_directory)
 
 @bot.command()
 async def helpme(ctx):
