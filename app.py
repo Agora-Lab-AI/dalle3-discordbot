@@ -50,7 +50,7 @@ async def generate(ctx, *, prompt: str):
 
     try:
         # Wait for the DALLE request to complete, with a timeout of 60 seconds
-        await asyncio.wait_for(future, timeout=90)
+        await asyncio.wait_for(future, timeout=300)
         print("Done generating images!")
 
         # List all files in the SAVE_DIRECTORY
@@ -67,14 +67,11 @@ async def generate(ctx, *, prompt: str):
         await ctx.send(files=[discord.File(filepath) for filepath in latest_files])
 
     except asyncio.TimeoutError:
-        await ctx.send("The request took too long! It might have been censored. Please try entering the prompt again.")
+        await ctx.send("The request took too long! It might have been censored or you're out of boosts. Please try entering the prompt again.")
     except Exception as e:
         await ctx.send(f"An error occurred: {e}")
 
-    except asyncio.TimeoutError:
-        await ctx.send("The request took too long! It might have been censored. Please try entering the prompt again.")
-    except Exception as e:
-        await ctx.send(f"An error occurred: {e}")
+
 
 
 # @bot.command()
