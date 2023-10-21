@@ -6,18 +6,40 @@ import time
 import discord
 from dalle3 import Dalle
 from discord.ext import commands
+import asyncio
+from dotenv import load_dotenv
+import glob
+import boto3
+
+load_dotenv()
+
+
+#AWS
+# AWS S3 Configuration
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
+s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+
+
+# keys
+DISCORD_TOKEN = os.getenv("DISCORD_API_KEY") 
+DALLE_TOKEN = os.getenv("BING_COOKIE") 
+
+
 
 TOKEN = "MTE2NTA1NDQyOTQzMTYwMzMwMg.GaN_Qi.iI6bMov43v8YGiVDaR33A5Jm4pjL4p4fIIFqk4"
 SAVE_DIRECTORY = "images/"
 
 intents = discord.Intents.default()
-# ... set other intents as needed
+intents.messages = True
+intents.guilds = True
+intents.message_content = True  # Ensure this intent is enabled
 bot = commands.Bot(command_prefix="!", intents=intents)
 
+
 bot.launch_time = time.time()
-dalle_instance = Dalle("YOUR_COOKIE_VALUE")
-
-
+dalle_instance = Dalle(DALLE_TOKEN)
 
 
 @bot.event
@@ -25,15 +47,23 @@ async def on_ready():
     print(f"Logged in as {bot.user.name}")
 
 
+executor = None
+
 @bot.command()
 async def generate(ctx, *, prompt: str):
     """Generates images based on the provided prompt"""
     await ctx.send(f"Generating images for prompt: `{prompt}`...")
-    dalle_instance.run(prompt)
+
+    loop = asyncio.get_event_loop()
+
+    # Offload the image generation to another thread
+    await loop.run_in_executor(executor, dalle_instance.run, prompt)
+
     for root, dirs, files in os.walk(SAVE_DIRECTORY):
         for filename in files:
             filepath = os.path.join(root, filename)
             await ctx.send(file=discord.File(filepath))
+
 
 
 @bot.command()
@@ -114,4 +144,4 @@ async def generate_error(ctx, error):
         await ctx.send(f"An error occurred: {error}")
 
 
-bot.run(TOKEN)
+bot.run(DISCORD_TOKEN)

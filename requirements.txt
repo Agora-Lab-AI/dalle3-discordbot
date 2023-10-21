@@ -1,2 +1,5 @@
 discord
 dalle3
+boto3
+glob
+asyncio
