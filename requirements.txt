@@ -1,5 +1,5 @@
 discord
 dalle3
+python-dotenv
 boto3
-glob
 asyncio

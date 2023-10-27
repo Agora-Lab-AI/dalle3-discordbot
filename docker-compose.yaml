@@ -1,0 +1,11 @@
+version: '3'
+services:
+  app:
+    container_name: Apelles
+    build: .
+    ports:
+      - "4000:80"
+    volumes:
+      - .:/app
+    env_file:
+      - ./.env #  environment:

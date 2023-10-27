@@ -27,6 +27,7 @@ images/
 .installed.cfg
 *.egg
 MANIFEST
+images/*
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
