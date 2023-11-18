@@ -27,7 +27,7 @@ async def generate(ctx, *, prompt: str = None):
     """Generates a response or image based on the provided prompt or image"""
     if prompt:
         # Text prompt provided, generate image with DALL·E 3
-        response = openai.images.create(
+        response = openai.images.generate(
             model="dall-e-3",
             prompt=prompt,
             size="1024x1024",
