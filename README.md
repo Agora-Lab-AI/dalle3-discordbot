@@ -50,19 +50,8 @@ A discord bot for the dalle3 api
    ```
 
 ## Configuration
-
-1. **Token & Cookie Configuration**:
-   
-   Open the bot script in a text editor and replace `'YOUR_DISCORD_BOT_TOKEN'` with your actual Discord bot token and `'YOUR_COOKIE_VALUE'` with the cookie value from the DALL-E 3 Unofficial API.
-
-2. **Permissions**:
-
-   Make sure your bot has the following permissions in Discord:
-
-   - Read Messages
-   - Send Messages
-   - Attach Files
-   - Manage Messages
+- Get your openAI key
+`export OPENAI_API_KEY=""`
 
 ## Running the Bot
 
