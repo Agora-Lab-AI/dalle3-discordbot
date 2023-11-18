@@ -39,7 +39,7 @@ async def generate(ctx, *, prompt: str = None):
     elif ctx.message.attachments:
         # Image attached, use GPT-4 with Vision
         image_url = ctx.message.attachments[0].url
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model="gpt-4-vision-preview",
             messages=[
                 {"role": "system", "content": {"image": image_url}}
