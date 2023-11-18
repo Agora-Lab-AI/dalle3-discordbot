@@ -3,3 +3,4 @@ dalle3
 python-dotenv
 boto3
 asyncio
+openai

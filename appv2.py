@@ -1,14 +1,29 @@
-import discord
-from discord.ext import commands
-import openai
-from dotenv import load_dotenv
 import os
+
+import boto3
+import discord
+import openai
+import requests
+from discord.ext import commands
+from dotenv import load_dotenv
 
 load_dotenv()
 
 # Fetch keys from environment variables
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+S3_BUCKET_NAME=os.getenv("S3_BUCKET_NAME")
+
+
+# AWS S3 Configuration
+s3 = boto3.client(
+    "s3",
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY
+)
+
 
 openai.api_key = OPENAI_API_KEY
 
@@ -21,6 +36,22 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user.name}")
+
+
+# Upoad to s3
+async def upload_to_s3(file_name, data):
+    try:
+            
+        s3.put_object(
+            Bucket=S3_BUCKET_NAME,
+            Key=file_name,
+            Body=data
+        )
+        return f"https://{S3_BUCKET_NAME}.s3.amazonaws.com/{file_name}"
+    except Exception as error:
+        print(f"An error occurred: {error}")
+        return None
+    
 
 @bot.command()
 async def generate(ctx, *, prompt: str = None):
@@ -35,6 +66,16 @@ async def generate(ctx, *, prompt: str = None):
             n=1
         )
         image_url = response.data[0].url
+
+        if image_url:
+            response = requests.get(image_url)
+            if response.status_code == 200:
+                s3_url = await upload_to_s3("image.png", response.content)
+                if s3_url:
+                    await ctx.send(f"Image generated and saved to s3: {s3_url}")
+                else:
+                    await ctx.send("An error occurred while uploading to S3")
+
         await ctx.send(image_url)
     elif ctx.message.attachments:
         # Image attached, use GPT-4 with Vision
