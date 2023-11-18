@@ -32,7 +32,7 @@ async def generate(ctx, *, prompt: str = None):
             prompt=prompt,
             size="1024x1024",
             quality="standard",
-            n=4
+            n=1
         )
         image_url = response.data[0].url
         await ctx.send(image_url)
